@@ -13,7 +13,7 @@ function getDefaultStore() {
     return {
         steps: 30,
         n: 1,
-        sampler_name: "Euler a",
+        sampler_name: "Euler",
         width: 512,  // make sure these are divisible by 64
         height: 512, // make sure these are divisible by 64
         cfg_scale: 7,
@@ -88,7 +88,7 @@ export const useGeneratorStore = defineStore("generator", () => {
         sampler: {
             name: "Sampler",
             enabled: false,
-            selected: ["Euler a"],
+            selected: ["Euler"],
             noneMessage: "Failed to generate: No sampler selected.",
             mapToParam: el => el.sampler_name,
         },
@@ -273,17 +273,24 @@ export const useGeneratorStore = defineStore("generator", () => {
         // Loop until queue is done or generation is cancelled
         while (!queue.value.every(el => el.gathered || el.failed) && !cancelled.value) {
             const availableQueue = queue.value.filter(el => !el.gathered && !el.failed);
-            await Promise.all(availableQueue.slice(0, getMaxRequests(availableQueue)).map(async (queuedImage, i) => {
-                if (cancelled.value) return;
+            const maxRequests = getMaxRequests(availableQueue);
+
+            for (const [i, queuedImage] of availableQueue.slice(0, maxRequests).entries()) {
+                if (cancelled.value) break;
                 queuedImage.gathered = true;
-                fetchNewID(queuedImage.params).then(finalImages => {
+                try {
+                    const finalImages = await fetchNewID(queuedImage.params);
                     if (!finalImages) {
                         queuedImage.failed = true;
-                        return;
+                        continue;
                     }
                     processImages([{...finalImages, ...queuedImage}]);
-                });
-            }))
+                } catch (error) {
+                    queuedImage.failed = true;
+                    // Optionally handle the error here
+                    console.error('Error fetching image:', error);
+                }
+            }
         }
 
         if (DEBUG_MODE) console.log("Images queued");
