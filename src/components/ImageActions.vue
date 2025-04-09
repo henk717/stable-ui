@@ -59,6 +59,7 @@ async function copyLink(imageData: ImageData) {
         sampler_name: imageData.sampler_name,
         model_name: imageData.modelName,
         seed: imageData.seed,
+        clip_skip: imageData.clip_skip,
     }
     const path = window.location.pathname.replace("images", "");
     let link = `${urlBase}${path}?share=`;
@@ -89,6 +90,5 @@ async function copyLink(imageData: ImageData) {
     <el-button v-if="imageData.starred" @click="outputStore.toggleStarred(imageData.id)" type="warning" :icon="StarFilled" plain>Unfavourite</el-button>
     <el-button @click="store.generateText2Img(imageData)" type="success" :icon="Refresh" plain>Text2img</el-button>
     <el-button @click="store.generateImg2Img(imageData.image)" type="success" :icon="Refresh" plain>Img2img</el-button>
-    <!--el-button @click="store.generateInpainting(imageData.image)" type="success" :icon="Refresh" plain>Inpainting</el-button-->
-    <el-button @click="copyLink(imageData)" type="success" :icon="Link" plain>Copy Link</el-button>
-</template>
+    <el-button @click="store.generateInpainting(imageData.image)" type="success" :icon="Refresh" plain>Inpainting</el-button>
+    <el-button @click="copyLink(imageData)" type="success" :icon="Link" plain>Copy Link</el-button></template>

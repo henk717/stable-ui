@@ -23,6 +23,7 @@ export interface ImageData {
     width?: number;
     modelName?: string;
     starred?: 1 | 0;
+    clip_skip?: number;
 }
 
 export const useOutputStore = defineStore("outputs", () => {
