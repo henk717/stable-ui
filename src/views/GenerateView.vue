@@ -18,6 +18,7 @@ import {
     PictureFilled,
     MagicStick,
 } from '@element-plus/icons-vue';
+import BrushFilled from '../components/icons/BrushFilled.vue';
 import ImageSearch from '../components/icons/ImageSearch.vue';
 import ImageProgress from '../components/ImageProgress.vue';
 import FormSlider from '../components/FormSlider.vue';
@@ -109,7 +110,7 @@ handleUrlParams();
     >
         <GeneratorMenuItem index="Text2Img"      :icon-one="Comment"           :icon-two="PictureFilled" :isMobile="isMobile" />
         <GeneratorMenuItem index="Img2Img"       :icon-one="PictureFilled"     :icon-two="PictureFilled" :isMobile="isMobile" />
-        <!--GeneratorMenuItem index="Inpainting"    :icon-one="BrushFilled"       :icon-two="PictureFilled" :isMobile="isMobile" /-->
+        <GeneratorMenuItem index="Inpainting"    :icon-one="BrushFilled"       :icon-two="PictureFilled" :isMobile="isMobile" />
         <GeneratorMenuItem index="Interrogation" :icon-one="ImageSearch"       :isMobile="isMobile" />
     </el-menu>
     <div class="form">
@@ -159,6 +160,8 @@ handleUrlParams();
                         <form-slider label="Height"            prop="height"          v-model="store.params.height"                    :min="store.minDimensions"    :max="store.maxDimensions" :step="64"   :change="onDimensionsChange" />
                         <form-slider label="Guidance(s)"       prop="cfgScales"       v-model="store.multiSelect.guidance.selected"    :min="store.minCfgScale"      :max="store.maxCfgScale"   info="Multi-select enabled. Higher values will make the AI respect your prompt more. Lower values allow the AI to be more creative." multiple v-if="store.multiSelect.guidance.enabled" />
                         <form-slider label="Guidance"          prop="cfgScale"        v-model="store.params.cfg_scale"                 :min="store.minCfgScale"      :max="store.maxCfgScale"   :step="0.5"  info="Higher values will make the AI respect your prompt more. Lower values allow the AI to be more creative." v-else />
+                        <form-slider label="CLIP Skip(s)"      prop="clipSkips"       v-model="store.multiSelect.clipSkip.selected"    :min="store.minClipSkip"      :max="store.maxClipSkip"   info="Multi-select enabled. Last layers of CLIP to ignore. For most situations this can be left alone." multiple v-if="store.multiSelect.clipSkip.enabled" />
+                        <form-slider label="CLIP Skip"         prop="clipSkip"        v-model="store.params.clip_skip"                 :min="store.minClipSkip"      :max="store.maxClipSkip"   info="Last layers of CLIP to ignore. For most situations this can be left alone." v-else />
                         <form-slider label="Init Strength"     prop="denoise"         v-model="store.params.denoising_strength"        :min="store.minDenoise"       :max="store.maxDenoise"    :step="0.01" info="The final image will diverge from the starting image at higher values." v-if="store.sourceGeneratorTypes.includes(store.generatorType)" />
                         <h3 style="margin: 16px 0 4px 0">Multi Select</h3>
                         <el-row>
@@ -167,6 +170,9 @@ handleUrlParams();
                             </el-col>
                             <el-col :span="isMobile ? 24 : 12">
                                 <form-switch label="Multi Guidance"     prop="multiGuidanceSwitch" v-model="store.multiSelect.guidance.enabled" />
+                            </el-col>
+                            <el-col :span="isMobile ? 24 : 12">
+                                <form-switch label="Multi CLIP Skip"    prop="multiClipSkipSwitch" v-model="store.multiSelect.clipSkip.enabled" />
                             </el-col>
                             <el-col :span="isMobile ? 24 : 12">
                                 <form-switch label="Multi Steps"        prop="multiStepsSwitch"    v-model="store.multiSelect.steps.enabled" />
@@ -207,7 +213,7 @@ handleUrlParams();
                         <CustomCanvas v-if="/Inpainting/.test(store.generatorType)" />
                         <CustomCanvas v-if="/Img2Img/.test(store.generatorType)" />
                     </div>
-                    <image-progress 
+                    <image-progress
                         :generated="store.outputs.length"
                         :total="store.queue.length"
                         :elapsed="formatEST(store.timer.seconds)"

@@ -70,6 +70,7 @@ function handleClose() {
             <span>Seed: {{currentOutput.seed || "Unknown"}} - </span>
             <span>Steps: {{currentOutput.steps || "Unknown"}} - </span>
             <span>CFG Scale: {{currentOutput.cfg_scale || "Unknown"}} - </span>
+            <span>Clip Skip: {{currentOutput.clip_skip || "Unknown"}} - </span>
             <span>Dimensions: {{currentOutput.width || "???"}}x{{currentOutput.height || "???"}} - </span>
         </div>
         <div>
